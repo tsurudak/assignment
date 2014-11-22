@@ -206,7 +206,7 @@ tidydat <- tidydat[c("subject", "activity", "signal", "sensor",
 ################
 # 10. WRITE FILE --------
 ################
-#write.table(tidydat, "tidydata.txt", row.name=FALSE, quote = FALSE,
+write.table(tidydat, "tidydata.txt", row.name=FALSE, quote = FALSE,
             sep = ",")
 
 save.image()
