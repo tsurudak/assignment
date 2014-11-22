@@ -5,6 +5,8 @@ date: "November 22, 2014"
 output: html_document
 ---
 
+# README
+
 The script for this analysis (run_analysis.R) first loads the required libraries (step 1) and sets an appropriate (local) working directory (step 2). The next set of code (step 3) downloads and unzip files from the internet. This section is commented out because it is assumed for this assignment that the data are available in the local working directly.
 
 ------
