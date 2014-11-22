@@ -6,15 +6,24 @@
 # NOV 2014
 ################
 
+################
+# 1. LOAD LIBRARIES --------
+################
 library(plyr)
 library(stringr)
 library(reshape2)
 
-# set working directory for assignment
+
+################
+# 2. SET WORKING DIRECTORY --------
+################
 setwd("/Users/KT/Documents/Coursera/3cleaning data/assignment")
 
+
+################
+# 3. ACQUIRE DATA --------
+################
 # download and unzip files from the internet
-# # make variable to show where data is
 # url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 # 
 # # download data
@@ -30,20 +39,26 @@ setwd("/Users/KT/Documents/Coursera/3cleaning data/assignment")
 # list.files("./UCI HAR Dataset")
 list.files("./UCI HAR Dataset/train")
 
-# ACTIVITY DATA --------
+
+################
+# 4. READ AND CLEAN DATA --------
+################
+# activity data --------
 label.names <- read.table("./UCI HAR Dataset/activity_labels.txt")
 colnames(label.names)  <- c("activityNumber", "activity")
-#look at activity data
+
 label.names$activity <- ordered(label.names$activity, 
                           levels = c("WALKING", "WALKING_UPSTAIRS", 
                                      "WALKING_DOWNSTAIRS",
                                      "SITTING", "STANDING", "LAYING"))
+
+# make labels lowercase
 label.names$activity <- tolower(label.names$activity)
 
-# FEATURE DATA --------
+# feature data--------
 col.names <- read.table("./UCI HAR Dataset/features.txt", as.is=c(1:2))
 
-# TRAINING DATA --------
+# training data --------
 #read in training data
 train.dat  <- read.table("./UCI HAR Dataset/train/X_train.txt")
 
@@ -69,7 +84,7 @@ train.labels  <- read.table("./UCI HAR Dataset/train/y_train.txt")
 traindat$activityNumber  <- train.labels[,1]
 
 
-# TEST DATA --------
+# test data --------
 #read in test data
 test.dat  <- read.table("./UCI HAR Dataset/test/X_test.txt")
 
@@ -93,17 +108,25 @@ test.labels <- read.table("./UCI HAR Dataset/test/y_test.txt")
 testdat$activityNumber  <- test.labels[,1]
 
 
-# MERGE TRAINING AND TEST DATA --------
+################
+# 5. MERGE TRAINING AND TEST DATA --------
+################
 dat <- rbind(traindat,testdat)
 
-# USE DESCRIPTIVE ACTIVITY NAMES --------
+
+################
+# 6. APPEND DESCRIPTIVE ACTIVITY NAMES --------
+################
 # merge data to get activity names into the dataframe
 dat <- merge(dat, label.names, by = "activityNumber")
 
 # the activityNumber variable is now redundant, remove it
 dat <- subset(dat, select=-activityNumber)
 
-# CLEAN UP VARIABLE NAMES --------
+
+################
+# 7. CLEAN UP VARIABLE NAMES --------
+################
 # remove parenthenses "()" from variable names
 names(dat) <- gsub("\\()","",names(dat))
 
@@ -112,11 +135,11 @@ names(dat) <- gsub("\\()","",names(dat))
 names(dat) <- gsub("^f","freq",names(dat))
 names(dat) <- gsub("^t","time",names(dat))
 
-# CREATE TIDY DATA SET --------
-# creates a second, independent tidy 
-# data set with the average of each variable for each activity and 
-# each subject
-
+################
+# 8. CREATE MEAN VALUES --------
+################
+# creates a second, independent data set with the average of 
+# each variable for each activity and each subject
 
 # convert to long format
 tidydat <- melt(dat, id.vars = c("subject", "activity"),
@@ -125,9 +148,13 @@ tidydat <- melt(dat, id.vars = c("subject", "activity"),
 # recast into wide dataset and add in the mean of each measured variable
 tidydat2 <- dcast(tidydat, subject + activity ~ variable, fun.aggregate = mean)
 
+################
+# 9. CREATE TIDY DATA SET --------
+################
 #melt again into long data
 tidydat <- melt(tidydat2, id.vars = c("subject", "activity"))
 
+# create new variables
 
 # create a new unit variable (time or frequency); determined by pulling
 # the first 4 characters off of the variable name
@@ -175,9 +202,11 @@ tidydat <- rename(tidydat, c("variable"="signal", "value"="average"))
 tidydat <- tidydat[c("subject", "activity", "signal", "sensor",
                    "measure", "unit", "axis", "average")]
 
-write.table(tidydat, "tidydata.txt", row.name=FALSE, quote = FALSE,
-            sep = ",")
 
-summary(as.factor(tidydat$signal))
+################
+# 10. WRITE FILE --------
+################
+#write.table(tidydat, "tidydata.txt", row.name=FALSE, quote = FALSE,
+            sep = ",")
 
 save.image()

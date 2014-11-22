@@ -52,6 +52,7 @@ webpage (3).
 
 ## Processed (tidy) data
 The final processed (tidy data) contains 8 variables, described below:
+
 **subject** : number from 1-30 (inclusive) indicating the subject being measured
 
 **activity** : character variable describing the activity performed ("laying", "sitting",
